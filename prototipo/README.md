@@ -8,13 +8,13 @@ App móvil accesible para seguir partidos de fútbol con un accesorio háptico, 
 
 **Opción A — doble clic.** Abre `index.html` en Chrome o Edge. Funciona tal cual.
 
-**Opción B — servidor local (recomendada para probar en el móvil).** Desde esta carpeta:
+**Opción B — servidor local en el puerto 8080 (recomendada para probar en el móvil).** Haz doble clic en `iniciar-servidor.bat` o, desde esta carpeta, ejecuta:
 
 ```
-py -m http.server 8765
+node servidor.js
 ```
 
-y abre `http://localhost:8765` en el navegador. Para probarlo en un móvil Android de la misma wifi, abre `http://IP-DEL-ORDENADOR:8765` en Chrome.
+y abre `http://localhost:8080` en el navegador. Para probarlo en un móvil Android de la misma wifi, abre `http://IP-DEL-ORDENADOR:8080` en Chrome.
 
 Para verlo a tamaño de móvil en el ordenador: F12 → icono de dispositivo → 412 × 915.
 
@@ -89,3 +89,16 @@ node -e "const fs=require('fs');fs.writeFileSync('js/datos-respaldo.js','window.
 
 - `../prototipo-iteracion1/` conserva el primer prototipo, tal como se evaluó.
 - Esta carpeta contiene la Iteración 2. Los cambios están en `../memoria/fase5.md`.
+
+## Abrirlo desde fuera con un túnel (puerto 8080)
+
+1. Arranca el servidor: doble clic en `iniciar-servidor.bat` (o `node servidor.js`). Deja la ventana abierta.
+2. En la extensión de túneles de VS Code, abre un túnel al puerto **8080** (`localhost:8080`, protocolo HTTP).
+3. Abre en el móvil la dirección pública que te dé la extensión.
+
+Notas:
+
+- El servidor no necesita instalar nada: solo Node.js. Sirve únicamente los archivos de esta carpeta y sin caché, así que el móvil carga siempre la última versión.
+- Para usar otro puerto: `node servidor.js 9000`.
+- Si el puerto 8080 está ocupado, el servidor avisa con el error `EADDRINUSE`: cierra el otro programa o usa otro puerto.
+- La dirección pública deja el prototipo accesible a quien tenga el enlace. Cierra el túnel cuando termines.

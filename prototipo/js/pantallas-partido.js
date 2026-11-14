@@ -45,7 +45,9 @@
         var partido = P.buscar(p.elegido);
         return '<p>Has elegido <strong>' + partido.local + ' contra ' + partido.visitante + '</strong>, hoy a las ' + partido.hora + '.</p>' +
           '<form data-form="confirmar" novalidate>' +
-          ui.grupo({ nombre: 'equipo', leyenda: '¿Con qué equipo vas?', valor: null, obligatorio: true,
+          // Si el equipo de la última vez juega este partido, viene ya marcado (menos pasos, Iteración 2).
+          ui.grupo({ nombre: 'equipo', leyenda: '¿Con qué equipo vas?', obligatorio: true,
+            valor: FV.prefs.equipo === partido.local ? 'local' : FV.prefs.equipo === partido.visitante ? 'visitante' : null,
             opciones: [['local', partido.local], ['visitante', partido.visitante], ['ninguno', 'Ninguno']] }) +
           '<div class="acciones">' + ui.boton('Elegir otro', 'otro') +
           '<button type="submit" class="btn principal">Confirmar partido</button></div></form>';
@@ -65,6 +67,8 @@
         if (!FV.validar(formulario)) return;
         FV.sesion.partidoId = p.elegido;
         FV.sesion.equipo = FV.valor(formulario, 'equipo');
+        var elegido = P.buscar(p.elegido);
+        if (FV.sesion.equipo !== 'ninguno') FV.prefs.equipo = FV.sesion.equipo === 'local' ? elegido.local : elegido.visitante;
         FV.ir('entorno', {});
       }
     }
@@ -180,7 +184,7 @@
     var e = P.e;
     if (e.finalizado) return 'Partido terminado.';
     return e.internet ? ui.estado(true, 'Datos en directo.')
-      : ui.estado(false, 'Sin actualizar desde el minuto ' + e.sinActualizarDesde + '.');
+      : ui.estado(false, 'Sin actualizar desde el minuto ' + e.sinActualizarDesde + '. El aviso está al final de la pantalla.');
   }
 
   function textoUltimo() {
@@ -202,11 +206,27 @@
     el('beta').hidden = !FV.sesion.soloMovil;
   };
 
+  /* Estado de las pausas, siempre visible: el texto del botón dice la acción («Reanudar»),
+     pero el estado («en pausa») debe verse sin tener que deducirlo (Iteración 2). */
+  function textoPausas() {
+    var s = FV.sesion;
+    var partes = [];
+    if (s.vibracionesPausa) partes.push('Vibraciones en pausa');
+    if (s.narracionPausa) partes.push('Narración en pausa');
+    return partes.join('. ');
+  }
+
+  function textoNivel() {
+    return 'Nivel de narración: ' + NOMBRE_NIVEL[FV.prefs.narracion] + '<small>Pulsa para cambiar</small>';
+  }
+
   function alternar(boton, campo, nombre, mensajePausa, mensajeActivo) {
     var s = FV.sesion;
     s[campo] = !s[campo];
     // El texto del botón dice lo que hará al pulsarlo; el estado se confirma por voz y texto.
     boton.textContent = (s[campo] ? 'Reanudar ' : 'Pausar ') + nombre;
+    el('pausas-texto').textContent = textoPausas();
+    el('pausas').hidden = !textoPausas();
     FV.vibrar('confirmacion', 'movil');
     return s[campo] ? mensajePausa : mensajeActivo;
   }
@@ -259,11 +279,8 @@
     html: function () {
       var e = P.e;
       var s = FV.sesion;
-      return '<p id="beta" class="bloque"' + (s.soloMovil ? '' : ' hidden') + '>Beta: solo móvil. Función en desarrollo, sin posición del balón.</p>' +
-        '<p class="marcador" id="marcador">' + P.marcadorTexto(e.marcadorMostrado) + '</p>' +
+      return '<p class="marcador" id="marcador">' + P.marcadorTexto(e.marcadorMostrado) + '</p>' +
         '<p class="minuto" id="minuto">' + (e.enDescanso ? 'Descanso' : 'Minuto ' + e.minMostrado) + '</p>' +
-        '<p id="datos">' + textoDatos() + '</p>' +
-        '<p id="ultimo" class="bloque">' + textoUltimo() + '</p>' +
         '<h2 class="solo-lector">Controles rápidos</h2>' +
         ui.boton('Repetir último evento', 'repetir', 'principal grande') +
         '<div class="fila">' +
@@ -275,10 +292,20 @@
         '<p id="volumen">Volumen ' + FV.prefs.volumen + ' de 5</p>' +
         '<button type="button" class="btn" data-accion="volMas" aria-label="Subir volumen">+</button>' +
         '</div>' +
-        ui.boton('Nivel de narración: ' + NOMBRE_NIVEL[FV.prefs.narracion], 'nivel', '', 'aria-describedby="ayuda-nivel"') +
-        '<p id="ayuda-nivel" class="solo-lector">Pulsa para cambiar de nivel.</p>' +
+        ui.boton(textoNivel(), 'nivel') +
+        /* La información que cambia de tamaño (último evento, estado de los datos, pausas) va DEBAJO
+           de los controles rápidos. Si estuviera encima, cada evento los desplazaría y dejarían de
+           estar siempre en el mismo sitio (R9.2.2, Iteración 2). */
+        '<h2 class="solo-lector">Información del partido</h2>' +
+        '<p id="ultimo" class="bloque">' + textoUltimo() + '</p>' +
+        '<p id="datos">' + textoDatos() + '</p>' +
+        '<p id="pausas" class="estado"' + (textoPausas() ? '' : ' hidden') + '><span aria-hidden="true">⏸</span> <span id="pausas-texto">' + textoPausas() + '</span></p>' +
+        '<p id="beta" class="bloque"' + (s.soloMovil ? '' : ' hidden') + '>Beta: solo móvil. Función en desarrollo, sin posición del balón.</p>' +
         '<h2 class="solo-lector">Más opciones</h2>' +
-        '<div class="fila">' + ui.boton('Ajustes del partido', 'ajustes') + ui.boton('Finalizar sesión', 'finalizar') + '</div>';
+        ui.boton('Ajustes del partido', 'ajustes') +
+        /* «Finalizar sesión» va sola, la última y separada: antes estaba pegada a otro botón
+           igual y era fácil pulsarla sin querer (Iteración 2). */
+        ui.boton('Finalizar sesión', 'finalizar', 'separado');
     },
     acciones: {
       repetir: function () { P.repetir(); },
@@ -297,7 +324,7 @@
       nivel: function (b) {
         var prefs = FV.prefs;
         prefs.narracion = NIVELES[(NIVELES.indexOf(prefs.narracion) + 1) % NIVELES.length];
-        b.textContent = 'Nivel de narración: ' + NOMBRE_NIVEL[prefs.narracion];
+        b.innerHTML = textoNivel();
         FV.guardarPrefs();
         FV.vibrar('confirmacion', 'movil');
         FV.avisar('Nivel de narración: ' + NOMBRE_NIVEL[prefs.narracion] + '.');
@@ -316,11 +343,14 @@
         ui.grupo({ nombre: 'entorno', leyenda: 'Entorno', opciones: OPCIONES_ENTORNO, valor: FV.sesion.entorno, cambio: 'elegir' }) +
         '<p id="propuesta" class="bloque" aria-live="polite">' + propuesta(FV.sesion.entorno) + '</p>' +
         '<div class="acciones">' + ui.boton('Vibración y narración', 'vibracion') +
+        // Ayuda durante el partido: recordar qué significa cada vibración (Iteración 2).
+        ui.boton('Recordar los patrones', 'patrones') +
         '<button type="submit" class="btn principal">Guardar y volver al partido</button></div></form>';
     },
     acciones: {
       elegir: function (campo) { el('propuesta').textContent = propuesta(campo.value); },
       vibracion: function () { FV.ir('vibracion', {}); },
+      patrones: function () { FV.ir('practica', { modo: 'aprender' }); },
       guardar: function (formulario) {
         var entorno = FV.valor(formulario, 'entorno');
         // Solo se aplica la propuesta si el entorno ha cambiado: no se pisan los ajustes hechos a mano.

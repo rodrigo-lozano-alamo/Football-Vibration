@@ -52,10 +52,19 @@
           break;
         case 'conectado':
           mensaje = ui.estado(true, 'Accesorio conectado. Batería al ' + s.bateria + ' %.');
-          botones = p.volverAlPartido
-            ? ui.boton('Volver al partido', 'alPartido', 'principal')
-            : ui.boton('Ajustar vibración y narración', 'ajustar') +
+          if (p.volverAlPartido) {
+            botones = ui.boton('Volver al partido', 'alPartido', 'principal');
+          } else if (!FV.prefs.ultimaPractica) {
+            /* Primera vez: se recomienda practicar. Sin práctica no se pueden reconocer
+               los eventos por la vibración, que es el canal principal (Iteración 2). */
+            mensaje += ' Aún no has practicado los patrones de vibración.';
+            botones = ui.boton('Ajustar vibración y narración', 'ajustar') +
+              ui.boton('Elegir partido sin practicar', 'partidos') +
+              ui.boton('Practicar los patrones (recomendado)', 'practicar', 'principal');
+          } else {
+            botones = ui.boton('Ajustar vibración y narración', 'ajustar') +
               ui.boton('Usar mis ajustes y elegir partido', 'partidos', 'principal');
+          }
           break;
         case 'error':
           // Mensajes sin tecnicismos: dicen qué pasa y qué hacer (perfil de Manuel).
@@ -107,6 +116,7 @@
       notada: function (b, p) { conectar(p); },
       partidos: function () { FV.ir('partidos', {}, { raiz: false }); },
       ajustar: function () { FV.ir('vibracion', {}); },
+      practicar: function () { FV.ir('practica', { modo: 'aprender' }); },
       alPartido: function () { FV.ir('partido', {}, { raiz: true }); }
     }
   };
@@ -157,7 +167,9 @@
         ui.boton('Probar vibración', 'probar') +
         /* Interruptor: role="switch" + aria-checked. El estado va también escrito en el texto. */
         '<button type="button" class="btn" role="switch" data-accion="reforzado" aria-checked="' + prefs.reforzado + '" aria-describedby="ayuda-reforzado">' +
-          'Pulsos reforzados: <span id="t-reforzado">' + (prefs.reforzado ? 'activado' : 'desactivado') + '</span></button>' +
+          /* El estado escrito es solo visual (aria-hidden): el lector ya lo dice con aria-checked.
+             Así no se oye dos veces «activado» (Iteración 2). */
+          'Pulsos reforzados<span aria-hidden="true">: <span id="t-reforzado">' + (prefs.reforzado ? 'activado' : 'desactivado') + '</span></span></button>' +
         '<p id="ayuda-reforzado">Vibraciones más largas, para notarlas mejor.</p>' +
         ajuste('Volumen', 'volumen') +
         ui.grupo({ nombre: 'narracion', leyenda: 'Nivel de narración', valor: prefs.narracion, cambio: 'narracion',
@@ -219,7 +231,7 @@
 
   /* ---------- P07 Práctica de patrones (R9.3.3) ----------
      Tres modos: aprender (notar cada patrón), test (adivinar) y resultado. */
-  var practica = { orden: [], i: 0, fallos: [], respuesta: null };
+  var practica = { orden: [], i: 0, fallos: [], respuesta: null, notado: false };
 
   function barajar(lista) {
     var copia = lista.slice();
@@ -231,7 +243,7 @@
   }
 
   function empezarTest(claves) {
-    practica = { orden: barajar(claves), i: 0, fallos: [], respuesta: null };
+    practica = { orden: barajar(claves), i: 0, fallos: [], respuesta: null, notado: false };
     FV.ir('practica', { modo: 'test' }, { reemplazar: true });
   }
 
@@ -281,9 +293,11 @@
       // «practica»: vibra aunque las vibraciones del partido estén en pausa.
       notar: function (b) { FV.vibrar(b.dataset.clave, 'practica'); },
       empezar: function () { empezarTest(FV.EVENTOS_DEPORTIVOS); },
-      reproducir: function () { FV.vibrar(practica.orden[practica.i], 'practica'); },
+      reproducir: function () { practica.notado = true; FV.vibrar(practica.orden[practica.i], 'practica'); },
       responder: function (b) {
         if (practica.respuesta) return;             // ya respondido: se espera a «Siguiente»
+        // No se puede responder sin haber notado el patrón: evita fallos por despiste (Iteración 2).
+        if (!practica.notado) { FV.avisar('Primero pulsa «Reproducir patrón».'); return; }
         var correcta = practica.orden[practica.i];
         var acierto = b.dataset.clave === correcta;
         practica.respuesta = b.dataset.clave;
@@ -300,6 +314,7 @@
       siguiente: function () {
         practica.i += 1;
         practica.respuesta = null;
+        practica.notado = false;
         if (practica.i < practica.orden.length) { FV.ir('practica', { modo: 'test' }, { reemplazar: true }); return; }
         var total = practica.orden.length;
         var resultado = (total - practica.fallos.length) + ' de ' + total;

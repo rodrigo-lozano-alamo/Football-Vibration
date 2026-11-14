@@ -76,6 +76,9 @@
     if (!e || e.finalizado) return;
     e.min += 1;
 
+    // La batería del accesorio baja durante el partido (simulado: 1 % cada 6 minutos).
+    if (FV.sesion.accesorio === 'conectado' && e.min % 6 === 0) P.gastarBateria(1);
+
     // Posición del balón: una por minuto. Sin internet o en el descanso, el balón no se mueve.
     if (e.internet && !e.enDescanso) {
       var posiciones = FV.datos.balon.posiciones;
@@ -231,7 +234,7 @@
 
   P.reintentar = function () {
     // En el prototipo la conexión solo vuelve con el JSON o con el botón del simulador.
-    if (P.e && !P.e.internet) FV.avisar('Todavía sin conexión.');
+    if (P.e && !P.e.internet) FV.avisar('Todavía sin conexión. Sigo intentándolo; te avisaré cuando vuelva.');
   };
 
   P.recuperarInternet = function () {
@@ -250,6 +253,19 @@
     );
     FV.sim.actualizar();
     FV.alCambiarPartido();
+  };
+
+  /* ---------- Batería del accesorio (R9.3.5, R9.5.1) ----------
+     El aviso es proactivo y sale del móvil: el usuario no tiene que abrir «Estado» para enterarse. */
+  P.gastarBateria = function (cantidad) {
+    var s = FV.sesion;
+    var antes = s.bateria;
+    s.bateria = Math.max(1, s.bateria - cantidad);
+    if (antes >= 20 && s.bateria < 20) {
+      FV.vibrar('tecnico', 'movil');
+      FV.mostrarAviso('Batería del accesorio baja: ' + s.bateria + ' %. Puede apagarse antes de que acabe el partido.',
+        [{ texto: 'Cerrar aviso', accion: FV.cerrarAviso }], 'fallo');
+    }
   };
 
   /* ---------- Accesorio ---------- */

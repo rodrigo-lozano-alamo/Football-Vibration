@@ -31,7 +31,9 @@
     var region = el('avisos');
     region.textContent = '';
     window.setTimeout(function () { region.textContent = texto; }, 60);
-    if (FV.prefs.vozApp && !(opciones && opciones.sinVoz)) FV.hablar(texto);
+    /* La confirmación de una acción del usuario interrumpe lo que se esté diciendo:
+       si esperase a que acabe la narración, la respuesta llegaría tarde (Iteración 2). */
+    if (FV.prefs.vozApp && !(opciones && opciones.sinVoz)) { FV.callar(); FV.hablar(texto); }
   };
 
   /* Narración del partido.

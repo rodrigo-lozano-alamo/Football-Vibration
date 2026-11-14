@@ -212,7 +212,9 @@
       parrafo.innerHTML = '<span aria-hidden="true">' + (tipo === 'recuperado' ? '✓' : '⚠') + '</span> ' + texto;
     }, 60);
     if (FV.prefs.vozApp) FV.hablar(texto);
-    if (tipo === 'recuperado') cierreAviso = window.setTimeout(FV.cerrarAviso, 8000);
+    /* El aviso no se cierra solo: quien lee despacio no lo pierde (Iteración 2).
+       Fuera de Partido se acerca a la vista; en Partido no, para no mover los controles. */
+    if (FV.actual() !== 'partido') seccion.scrollIntoView({ block: 'nearest' });
   };
 
   FV.cerrarAviso = function () {
@@ -250,6 +252,22 @@
       .then(function (datos) { FV.datos = datos; return datos; });
   };
 
+  /* ---------- Botón «atrás» del móvil o del navegador (Iteración 2) ----------
+     Sin esto, el botón «atrás» de Android sacaba al usuario de la app y se perdía el partido.
+     Ahora hace lo mismo que «Volver»; en Partido pide confirmación antes de salir. */
+  function rearmarAtras() {
+    try { window.history.pushState({ fv: true }, ''); } catch (e) { /* sin historial: se ignora */ }
+  }
+
+  function alRetroceder() {
+    var dialogo = $('#dialogo');
+    if (dialogo.open) { dialogo.close(); rearmarAtras(); return; }
+    var enPartido = FV.partido.e && !FV.partido.e.finalizado;
+    if (FV.pantallas[actual.nombre].volver) { rearmarAtras(); FV.volver(); }
+    else if (enPartido) { rearmarAtras(); FV.pedirFinalizar(); }
+    // En una pantalla raíz sin partido en curso, «atrás» sale de la app con normalidad.
+  }
+
   /* ---------- Arranque ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     var habiaPerfil = FV.cargarPrefs();
@@ -257,6 +275,8 @@
     if (!habiaPerfil && window.matchMedia('(prefers-contrast: more)').matches) FV.prefs.tema = 'contraste';
     FV.aplicarAspecto();
     iniciarEventos();
+    rearmarAtras();
+    window.addEventListener('popstate', alRetroceder);
     FV.sim.iniciar();
     FV.cargarDatos().then(function () {
       FV.ir(FV.prefs.perfil ? 'inicio' : 'bienvenida', {}, { raiz: true });

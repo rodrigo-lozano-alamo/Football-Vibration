@@ -140,6 +140,8 @@
     volver: false,
     html: function () {
       var s = FV.sesion;
+      // Al volver a Inicio sin partido en curso se sale del modo «solo móvil» (Iteración 2).
+      if (!FV.partido.e) s.soloMovil = false;
       var conectado = s.accesorio === 'conectado';
       var estado = conectado
         ? ui.estado(true, 'Accesorio conectado. Batería al ' + s.bateria + ' %.')

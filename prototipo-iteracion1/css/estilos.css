@@ -1,0 +1,195 @@
+/* Football Vibration — estilos.
+   Prioridad: accesibilidad (WCAG 2.2 AA, contraste de texto >= 7:1 en los dos temas). */
+
+/* ---------- Temas ---------- */
+:root {
+  --fondo: #ffffff;
+  --texto: #1a1a1a;
+  --primario: #0a3d7a;
+  --sobre-primario: #ffffff;
+  --borde: #0a3d7a;
+  --error: #9b1c1c;
+  --ok: #0f5a2a;
+  --foco: #0a3d7a;
+  --grosor: 2px;
+}
+/* Tema de alto contraste (perfil de baja visión). */
+[data-tema="contraste"] {
+  --fondo: #000000;
+  --texto: #ffffff;
+  --primario: #ffd400;
+  --sobre-primario: #000000;
+  --borde: #ffffff;
+  --error: #ff8a80;
+  --ok: #7cfc9a;
+  --foco: #00e5ff;
+  --grosor: 3px;
+}
+
+/* ---------- Tamaño de texto ----------
+   Todo va en rem: respeta el tamaño de letra del sistema y el zoom del navegador. */
+html { font-size: 100%; }
+html[data-texto="grande"] { font-size: 125%; }
+html[data-texto="muy"] { font-size: 150%; }
+
+* { box-sizing: border-box; }
+/* El atributo hidden manda siempre, aunque el elemento tenga display propio (flex, grid…). */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+h1, h2, p { margin: 0; }
+/* Con mucho zoom, una palabra larga se parte antes que provocar desplazamiento horizontal. */
+h1, h2, p, li, legend, label, button { overflow-wrap: anywhere; }
+h1 { font-size: 1.75rem; line-height: 1.25; }
+h2 { font-size: 1.25rem; line-height: 1.3; }
+/* El título recibe el foco al cambiar de pantalla; el contorno deja claro dónde está. */
+h1:focus-visible, p:focus-visible, main:focus-visible { outline: var(--grosor) dashed var(--foco); outline-offset: 4px; }
+
+/* Foco siempre visible y grueso. */
+:focus-visible { outline: calc(var(--grosor) + 1px) solid var(--foco); outline-offset: 3px; }
+
+.solo-lector {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+.saltar {
+  position: absolute; left: 0.5rem; top: -10rem;
+  padding: 0.75rem 1rem; background: var(--primario); color: var(--sobre-primario);
+  font-weight: 700; z-index: 10;
+}
+.saltar:focus { top: 0.5rem; }
+
+/* ---------- Estructura ---------- */
+.marco { display: grid; gap: 1.5rem; }
+.app { display: flex; flex-direction: column; gap: 1rem; padding: 1rem; min-height: 100vh; }
+main { display: flex; flex-direction: column; gap: 1rem; flex: 1; }
+.pila { display: flex; flex-direction: column; gap: 0.75rem; }
+/* La acción principal va siempre la última, abajo. */
+.acciones { display: flex; flex-direction: column; gap: 0.75rem; margin-top: auto; padding-top: 0.5rem; }
+
+@media (min-width: 60rem) {
+  .marco { grid-template-columns: minmax(0, 26rem) minmax(0, 1fr); max-width: 68rem; margin: 0 auto; padding: 1.5rem; align-items: start; }
+  .app { border: var(--grosor) solid var(--borde); border-radius: 1rem; min-height: 46rem; }
+}
+
+/* ---------- Barra superior ---------- */
+.barra { display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.btn-barra {
+  min-width: 3rem; min-height: 3rem; padding: 0.5rem 0.875rem;
+  background: var(--fondo); color: var(--texto);
+  border: var(--grosor) solid var(--borde); border-radius: 0.5rem;
+  font: inherit; font-weight: 700; cursor: pointer;
+}
+/* visibility:hidden conserva el hueco (posiciones fijas) y saca el botón del orden de foco. */
+.invisible { visibility: hidden; }
+
+/* ---------- Botones ----------
+   Mínimo 56 px de alto (objetivo táctil >= 48 px). Sin altura fija: el texto puede ocupar varias líneas al ampliar. */
+.btn {
+  display: block; width: 100%; min-height: 3.5rem; padding: 0.75rem 1rem;
+  font: inherit; font-size: 1.25rem; font-weight: 700; text-align: center;
+  border-radius: 0.625rem; cursor: pointer;
+  border: var(--grosor) solid var(--borde);
+  background: var(--fondo); color: var(--texto);
+}
+.btn.principal { background: var(--primario); color: var(--sobre-primario); border-color: var(--primario); }
+.btn.grande { min-height: 4.5rem; font-size: 1.375rem; }
+.btn small { display: block; font-size: 1rem; font-weight: 400; }
+.fila { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+/* Fila − valor +: los botones son cuadrados grandes y el valor queda en el centro. */
+.ajuste { display: grid; grid-template-columns: 3.5rem 1fr 3.5rem; gap: 0.75rem; align-items: center; }
+.ajuste .btn { padding: 0; font-size: 1.75rem; }
+.ajuste p { text-align: center; font-weight: 700; }
+/* En pantallas muy estrechas o con mucho zoom, las filas pasan a una columna. */
+@media (max-width: 20rem) { .fila { grid-template-columns: 1fr; } }
+
+.etiqueta-beta { border: var(--grosor) solid var(--borde); border-radius: 0.375rem; padding: 0 0.375rem; font-size: 0.9375rem; display: inline-block; }
+
+/* ---------- Formularios ---------- */
+form { display: flex; flex-direction: column; gap: 1rem; flex: 1; }
+fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+legend { font-weight: 700; font-size: 1.25rem; padding: 0; margin-bottom: 0.75rem; }
+.opcion {
+  display: flex; align-items: center; gap: 0.75rem;
+  min-height: 3.5rem; padding: 0.75rem 1rem;
+  border: var(--grosor) solid var(--borde); border-radius: 0.625rem; cursor: pointer;
+}
+.opcion input { width: 1.75rem; height: 1.75rem; flex: none; accent-color: var(--primario); margin: 0; }
+/* La opción elegida se distingue por el borde grueso y la palabra «Seleccionado», no solo por el color. */
+.opcion:has(input:checked) { border-width: calc(var(--grosor) + 3px); font-weight: 700; }
+.opcion:has(input:checked) span::after { content: " · Seleccionado"; font-weight: 400; }
+.opcion:has(input:focus-visible) { outline: calc(var(--grosor) + 1px) solid var(--foco); outline-offset: 3px; }
+.error { color: var(--error); font-weight: 700; }
+.error::before { content: "⚠ "; }
+[aria-invalid="true"] .opcion { border-style: dashed; }
+
+/* ---------- Bloques de información ---------- */
+.estado { font-weight: 700; }
+.estado.ok { color: var(--ok); }
+.estado.mal { color: var(--error); }
+.bloque { border: var(--grosor) solid var(--borde); border-radius: 0.625rem; padding: 0.75rem 1rem; }
+.marcador { font-size: 2.25rem; font-weight: 700; line-height: 1.2; text-align: center; overflow-wrap: anywhere; }
+.minuto { text-align: center; font-size: 1.25rem; }
+.lista-estado { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.lista-estado li { border: var(--grosor) solid var(--borde); border-radius: 0.625rem; padding: 0.75rem 1rem; }
+
+/* ---------- Avisos ---------- */
+.aviso-conexion { border: calc(var(--grosor) + 2px) solid var(--error); border-radius: 0.625rem; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.aviso-conexion.recuperado { border-color: var(--ok); }
+.aviso-conexion p { font-weight: 700; }
+.avisos:not(:empty), .subtitulo { border-left: 0.375rem solid var(--borde); padding: 0.5rem 0.75rem; font-weight: 700; }
+.subtitulo::before { content: "Narración: "; font-weight: 400; }
+
+/* ---------- Diálogo ---------- */
+dialog {
+  width: min(24rem, calc(100vw - 2rem)); padding: 1.25rem;
+  background: var(--fondo); color: var(--texto);
+  border: calc(var(--grosor) + 1px) solid var(--borde); border-radius: 0.75rem;
+}
+dialog[open] { display: flex; flex-direction: column; gap: 1rem; }
+dialog::backdrop { background: rgba(0, 0, 0, 0.75); }
+
+/* ---------- Indicador «Buscando» ----------
+   Única animación de la app. Siempre va acompañada de texto y se detiene con prefers-reduced-motion. */
+.buscando { display: flex; gap: 0.5rem; justify-content: center; padding: 1rem 0; }
+.buscando span { width: 1rem; height: 1rem; border-radius: 50%; background: var(--texto); animation: latido 1.2s infinite; }
+.buscando span:nth-child(2) { animation-delay: 0.2s; }
+.buscando span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes latido { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .buscando span { animation: none; }
+  * { scroll-behavior: auto !important; transition: none !important; }
+}
+
+/* ---------- Simulador (herramienta de prueba) ---------- */
+.simulador { border: 3px dashed var(--borde); border-radius: 0.75rem; padding: 1rem; margin: 0 1rem 1rem; display: flex; flex-direction: column; gap: 0.75rem; font-size: 1rem; }
+@media (min-width: 60rem) { .simulador { margin: 0; } }
+.sim-etiqueta { font-weight: 700; letter-spacing: 0.03em; }
+.simulador summary { cursor: pointer; min-height: 3rem; display: flex; align-items: center; gap: 0.5rem; }
+.simulador summary h2 { display: inline; }
+#sim-contenido { display: flex; flex-direction: column; gap: 0.75rem; padding-top: 0.5rem; }
+.sim-campo { width: 100%; max-width: 22rem; height: auto; border: 2px solid var(--borde); }
+.sim-campo .linea { stroke: var(--texto); stroke-width: 1; fill: none; }
+.sim-campo .balon { fill: var(--primario); stroke: var(--texto); stroke-width: 1; }
+.sim-botones { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.sim-botones .btn { width: auto; flex: 1 1 8rem; min-height: 3rem; font-size: 1rem; padding: 0.5rem 0.75rem; }
+.sim-registro { height: 12rem; overflow-y: auto; border: 2px solid var(--borde); padding: 0.5rem; font-family: ui-monospace, Consolas, monospace; font-size: 0.9375rem; margin: 0; list-style: none; }
+.sim-registro li { padding: 0.125rem 0; overflow-wrap: anywhere; }
+
+.sin-js { padding: 1rem; font-weight: 700; }
+
+/* El usuario pide más contraste en el sistema: bordes más gruesos también en el tema estándar. */
+@media (prefers-contrast: more) { :root { --grosor: 3px; } }
+
+/* Conmutadores del simulador: el estado activo se ve por el relleno y por la marca ✓, no solo por el color. */
+.sim-botones [aria-pressed="true"] { background: var(--primario); color: var(--sobre-primario); }
+.sim-botones [aria-pressed="true"]::before { content: "✓ "; }

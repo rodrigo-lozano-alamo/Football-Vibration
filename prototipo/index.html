@@ -27,16 +27,18 @@
         </button>
       </header>
 
+      <!-- Cada pantalla se pinta aquí, con un único h1. tabindex="-1" permite el enlace «Saltar al contenido». -->
+      <main id="principal" tabindex="-1"></main>
+
       <!-- Aviso de conexión (P14). Es un bloque dentro de la app, no una pantalla:
            no saca al usuario del partido ni le mueve el foco (D-11).
+           Va DESPUÉS de la pantalla: si estuviera encima, al aparecer empujaría los controles
+           rápidos y dejarían de estar «siempre en el mismo sitio» (R9.2.2, Iteración 2).
            role="alert" equivale a aria-live="assertive": solo se usa para fallos. -->
       <section id="aviso-conexion" class="aviso-conexion" aria-label="Aviso de conexión" hidden>
         <p id="aviso-texto" role="alert"></p>
         <div id="aviso-botones" class="pila"></div>
       </section>
-
-      <!-- Cada pantalla se pinta aquí, con un único h1. tabindex="-1" permite el enlace «Saltar al contenido». -->
-      <main id="principal" tabindex="-1"></main>
 
       <!-- Subtítulos de la narración: texto visible de lo que dice la voz.
            NO es región viva: si lo fuera, el lector de pantalla repetiría lo que ya dice la narración. -->

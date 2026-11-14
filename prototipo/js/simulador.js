@@ -33,7 +33,7 @@
       '<h3>Provocar un fallo</h3>' +
       '<div class="sim-botones">' +
         boton('Cortar internet', 'cortar') + boton('Recuperar internet', 'recuperar') +
-        boton('Desconectar accesorio', 'desconectar') +
+        boton('Desconectar accesorio', 'desconectar') + boton('Batería baja', 'bateria') +
         '<button type="button" class="btn" data-sim="apagado" aria-pressed="false">Accesorio apagado al buscar</button>' +
         '<button type="button" class="btn" data-sim="bluetooth" aria-pressed="false">Bluetooth apagado al buscar</button>' +
       '</div>' +
@@ -63,6 +63,7 @@
     else if (accion === 'cortar') P.cortarInternet();
     else if (accion === 'recuperar') P.recuperarInternet();
     else if (accion === 'desconectar') P.desconectarAccesorio();
+    else if (accion === 'bateria') { if (FV.sesion.accesorio === 'conectado') P.gastarBateria(FV.sesion.bateria - 15); }
     else if (accion === 'apagado' || accion === 'bluetooth') {
       var activo = b.getAttribute('aria-pressed') !== 'true';
       b.setAttribute('aria-pressed', String(activo));

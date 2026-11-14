@@ -15,7 +15,8 @@ window.FV = window.FV || {};
     volumen: 3,                   // 1 a 5
     narracion: 'normal',          // 'minima' | 'normal' | 'detallada'
     emparejado: null,             // nombre del accesorio emparejado
-    ultimaPractica: null          // texto, p. ej. «5 de 5»
+    ultimaPractica: null,         // texto, p. ej. «5 de 5»
+    equipo: null                  // nombre del equipo elegido la última vez (no volver a preguntarlo)
   };
 
   function copia(o) { return JSON.parse(JSON.stringify(o)); }

@@ -37,7 +37,7 @@ El panel con borde discontinuo es una **herramienta de prueba y no forma parte d
 
 - Mini campo con la posición del balón y su descripción en texto.
 - Registro de los patrones emitidos (origen, evento y valores en milisegundos).
-- Botones para lanzar eventos, cortar internet, desconectar el accesorio o simular que está apagado.
+- Botones para lanzar eventos, cortar internet, desconectar el accesorio, simular batería baja o que está apagado.
 - «Saltar al siguiente evento» para no esperar, y «Borrar perfil y reiniciar» para volver a empezar.
 
 ## Vibración y voz
@@ -82,4 +82,10 @@ node -e "const fs=require('fs');fs.writeFileSync('js/datos-respaldo.js','window.
 
 - La intensidad de la vibración no se puede regular desde la web; se simula con la opción «Pulsos reforzados».
 - No se ha probado todavía con VoiceOver ni TalkBack reales, solo con teclado y revisando el marcado.
-- Con el texto en «Muy grande» y además un zoom del 200 % en una pantalla de 412 px aparece desplazamiento horizontal. Cada ajuste por separado funciona bien.
+- Con el texto en «Muy grande» y además un zoom del 200 % en una pantalla de 412 px puede quedar un pequeño desplazamiento horizontal. Cada ajuste por separado funciona bien.
+- El botón «atrás» del móvil hace lo mismo que «Volver»; en Partido pide confirmación antes de salir.
+
+## Iteraciones
+
+- `../prototipo-iteracion1/` conserva el primer prototipo, tal como se evaluó.
+- Esta carpeta contiene la Iteración 2. Los cambios están en `../memoria/fase5.md`.

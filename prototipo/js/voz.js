@@ -54,16 +54,18 @@
   /* ----- Lectura de textos largos (resumen, alineaciones), frase a frase -----
      Leer por frases permite detener la lectura y continuarla donde se quedó
      cuando un evento del directo la interrumpe (T8). El resumen NUNCA vibra. */
-  var lectura = { frases: [], i: 0, activa: false, turno: 0, alCambiar: null };
+  var lectura = { frases: [], i: 0, activa: false, empezada: false, turno: 0, alCambiar: null };
 
   FV.lecturaActiva = function () { return lectura.activa; };
-  FV.lecturaPendiente = function () { return !lectura.activa && lectura.i > 0 && lectura.i < lectura.frases.length; };
+  // Pendiente: se empezó y se detuvo antes del final (aunque fuera en la primera frase).
+  FV.lecturaPendiente = function () { return !lectura.activa && lectura.empezada && lectura.i < lectura.frases.length; };
 
   function siguienteFrase(turno) {
     // «turno» descarta los finales de frase de una lectura ya cancelada.
     if (turno !== lectura.turno || !lectura.activa) return;
     if (lectura.i >= lectura.frases.length) {
       lectura.activa = false;
+      lectura.empezada = false;
       lectura.i = 0;
       if (lectura.alCambiar) lectura.alCambiar();
       return;
@@ -88,6 +90,7 @@
       return;
     }
     lectura.activa = true;
+    lectura.empezada = true;
     siguienteFrase(lectura.turno);
   };
 
@@ -96,7 +99,7 @@
     var estaba = lectura.activa;
     lectura.activa = false;
     lectura.turno += 1;
-    if (olvidar) { lectura.i = 0; lectura.alCambiar = null; }
+    if (olvidar) { lectura.i = 0; lectura.empezada = false; lectura.alCambiar = null; }
     if (estaba) {
       FV.callar();
       if (lectura.alCambiar) lectura.alCambiar();   // la pantalla actualiza su botón («Continuar resumen»)

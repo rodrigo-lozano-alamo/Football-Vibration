@@ -67,6 +67,8 @@
     $('#btn-estado').classList.toggle('invisible', pantalla.estado === false);
 
     if (entrando) {
+      // Las confirmaciones de la pantalla anterior ya no aplican: se borran para no dejar texto antiguo.
+      $('#avisos').textContent = '';
       if (pantalla.alEntrar) pantalla.alEntrar(params);
       /* Gestión del foco: al cambiar de pantalla, el foco va al título (o al mensaje de estado).
          Así el lector de pantalla anuncia dónde está el usuario (R9.2.3). */
@@ -234,6 +236,11 @@
      fetch() no funciona al abrir index.html directamente (file://).
      En ese caso se usa la copia de js/datos-respaldo.js. */
   FV.cargarDatos = function () {
+    // Con file:// el navegador bloquea fetch: se va directamente a la copia, sin errores en la consola.
+    if (window.location.protocol === 'file:') {
+      FV.datos = window.FV_DATOS_RESPALDO || null;
+      return Promise.resolve(FV.datos);
+    }
     return fetch('data/partido-simulado.json')
       .then(function (respuesta) {
         if (!respuesta.ok) throw new Error('sin datos');

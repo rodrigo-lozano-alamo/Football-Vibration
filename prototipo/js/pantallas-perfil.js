@@ -105,7 +105,9 @@
         '<div class="acciones"><button type="submit" class="btn principal">Guardar preferencias</button></div>' +
         '</form>';
     },
-    // Al salir sin guardar se recupera el aspecto guardado.
+    /* Vista previa: el perfil propuesto se ve antes de aceptarlo.
+       Al salir sin guardar se recupera el aspecto guardado. */
+    alEntrar: function () { FV.aplicarAspecto(borrador.tema, borrador.texto); },
     alSalir: function () { FV.aplicarAspecto(); },
     acciones: {
       personalizar: function (b, p) {

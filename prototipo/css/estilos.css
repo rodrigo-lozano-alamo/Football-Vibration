@@ -33,6 +33,8 @@ html[data-texto="grande"] { font-size: 125%; }
 html[data-texto="muy"] { font-size: 150%; }
 
 * { box-sizing: border-box; }
+/* El atributo hidden manda siempre, aunque el elemento tenga display propio (flex, grid…). */
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -44,6 +46,8 @@ body {
 }
 
 h1, h2, p { margin: 0; }
+/* Con mucho zoom, una palabra larga se parte antes que provocar desplazamiento horizontal. */
+h1, h2, p, li, legend, label, button { overflow-wrap: anywhere; }
 h1 { font-size: 1.75rem; line-height: 1.25; }
 h2 { font-size: 1.25rem; line-height: 1.3; }
 /* El título recibe el foco al cambiar de pantalla; el contorno deja claro dónde está. */
@@ -108,7 +112,7 @@ main { display: flex; flex-direction: column; gap: 1rem; flex: 1; }
 /* En pantallas muy estrechas o con mucho zoom, las filas pasan a una columna. */
 @media (max-width: 20rem) { .fila { grid-template-columns: 1fr; } }
 
-.etiqueta-beta { border: var(--grosor) solid var(--borde); border-radius: 0.375rem; padding: 0 0.375rem; font-size: 0.9375rem; white-space: nowrap; }
+.etiqueta-beta { border: var(--grosor) solid var(--borde); border-radius: 0.375rem; padding: 0 0.375rem; font-size: 0.9375rem; display: inline-block; }
 
 /* ---------- Formularios ---------- */
 form { display: flex; flex-direction: column; gap: 1rem; flex: 1; }
@@ -185,3 +189,7 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.75); }
 
 /* El usuario pide más contraste en el sistema: bordes más gruesos también en el tema estándar. */
 @media (prefers-contrast: more) { :root { --grosor: 3px; } }
+
+/* Conmutadores del simulador: el estado activo se ve por el relleno y por la marca ✓, no solo por el color. */
+.sim-botones [aria-pressed="true"] { background: var(--primario); color: var(--sobre-primario); }
+.sim-botones [aria-pressed="true"]::before { content: "✓ "; }

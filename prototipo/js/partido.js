@@ -101,6 +101,7 @@
     if (!e || e.finalizado) return;
     var siguientes = e.p.eventos.filter(function (ev) { return ev.min > e.min; });
     if (siguientes.length) e.min = siguientes[0].min - 1;
+    if (e.internet) e.minMostrado = e.min;
     P.tic();
   };
 

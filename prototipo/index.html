@@ -21,6 +21,9 @@
         <button type="button" id="btn-volver" class="btn-barra">
           <span aria-hidden="true">←</span> Volver
         </button>
+        <!-- Marca de la app. Decorativa (aria-hidden): solo se ve en las pantallas sin «Volver»,
+             en el hueco que ese botón deja libre. No es interactiva ni cambia la posición de los botones. -->
+        <span class="marca" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><circle cx="24" cy="24" r="8"/><path d="M12 15a13 13 0 0 0 0 18M36 15a13 13 0 0 1 0 18M5 9a22 22 0 0 0 0 30M43 9a22 22 0 0 1 0 30"/></svg><span>Football<br>Vibration</span></span>
         <!-- El nombre accesible incluye el texto visible «Estado» (WCAG 2.5.3). -->
         <button type="button" id="btn-estado" class="btn-barra" aria-label="Estado del sistema">
           Estado <span aria-hidden="true">ⓘ</span>

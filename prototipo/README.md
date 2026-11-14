@@ -50,7 +50,8 @@ El panel con borde discontinuo es una **herramienta de prueba y no forma parte d
 
 ```
 index.html                  Estructura fija: barra, aviso de conexión, zona de pantallas, avisos y simulador
-css/estilos.css             Dos temas (estándar y alto contraste), tamaños en rem
+css/estilos.css             Dos temas (estándar y alto contraste), tamaños en rem, iconos decorativos
+fuentes/                    Tipografía Atkinson Hyperlegible (regular y negrita)
 data/partido-simulado.json  Partidos, eventos y posiciones del balón (simulados)
 js/almacen.js               Preferencias (localStorage con try/catch) y estado de la sesión
 js/patrones.js              Tabla de patrones y función de vibración
@@ -76,13 +77,12 @@ node -e "const fs=require('fs');fs.writeFileSync('js/datos-respaldo.js','window.
 - Contraste de texto superior a 7:1 en los dos temas. Botones de 56 px de alto como mínimo.
 - Estados con texto e icono, nunca solo con color.
 - Respeta `prefers-reduced-motion` y `prefers-contrast`.
-- Tipografía: Atkinson Hyperlegible si está instalada en el dispositivo; si no, la del sistema.
+- Tipografía: Atkinson Hyperlegible, incluida en la carpeta `fuentes` (licencia abierta SIL OFL). Funciona sin conexión.
 
 ## Limitaciones conocidas
 
 - La intensidad de la vibración no se puede regular desde la web; se simula con la opción «Pulsos reforzados».
 - No se ha probado todavía con VoiceOver ni TalkBack reales, solo con teclado y revisando el marcado.
-- Con el texto en «Muy grande» y además un zoom del 200 % en una pantalla de 412 px puede quedar un pequeño desplazamiento horizontal. Cada ajuste por separado funciona bien.
 - El botón «atrás» del móvil hace lo mismo que «Volver»; en Partido pide confirmación antes de salir.
 
 ## Iteraciones

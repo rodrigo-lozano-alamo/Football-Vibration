@@ -38,7 +38,9 @@
     titulo: 'Bienvenida a ' + FV.NOMBRE_APP,
     volver: false, estado: false,
     html: function () {
-      return '<p>Vamos a adaptar la app a tu forma de ver. Son tres preguntas y tardarás menos de un minuto.</p>' +
+      // El emblema es decorativo (aria-hidden) y se coloca encima del título solo con CSS.
+      return '<div class="emblema" aria-hidden="true">' + FV.LOGO + '</div>' +
+        '<p>Vamos a adaptar la app a tu forma de ver. Son tres preguntas y tardarás menos de un minuto.</p>' +
         '<div class="acciones">' + ui.boton('Empezar', 'empezar', 'principal') + '</div>';
     },
     acciones: {
@@ -53,7 +55,10 @@
     volver: true, estado: false,
     html: function (p) {
       var q = PREGUNTAS[p.paso - 1];
-      return '<form data-form="siguiente" novalidate>' +
+      /* Barra de progreso decorativa: el paso ya se lee en el título («Paso 1 de 3»). */
+      var pasos = [1, 2, 3].map(function (n) { return '<span' + (n <= p.paso ? ' class="hecho"' : '') + '></span>'; }).join('');
+      return '<div class="pasos" aria-hidden="true">' + pasos + '</div>' +
+        '<form data-form="siguiente" novalidate>' +
         ui.grupo({ nombre: q.campo, etiquetadoPor: 'titulo', opciones: q.opciones, valor: borrador[q.campo], obligatorio: true, cambio: 'anotar' }) +
         '<div class="acciones"><button type="submit" class="btn principal">' + (p.paso < 3 ? 'Siguiente' : 'Ver mi perfil') + '</button></div>' +
         '</form>';

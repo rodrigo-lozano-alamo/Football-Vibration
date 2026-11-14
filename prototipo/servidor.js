@@ -16,7 +16,8 @@ const TIPOS = {
   '.json': 'application/json; charset=utf-8',
   '.md': 'text/markdown; charset=utf-8',
   '.png': 'image/png',
-  '.svg': 'image/svg+xml'
+  '.svg': 'image/svg+xml',
+  '.woff2': 'font/woff2'
 };
 
 http.createServer((peticion, respuesta) => {

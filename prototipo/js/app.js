@@ -134,6 +134,9 @@
   };
 
   /* ---------- Piezas de HTML ---------- */
+  /* Emblema de la app (un balón con ondas de vibración). Es decorativo: siempre va con aria-hidden. */
+  FV.LOGO = '<svg viewBox="0 0 48 48" focusable="false"><circle cx="24" cy="24" r="8"/><path d="M12 15a13 13 0 0 0 0 18M36 15a13 13 0 0 1 0 18M5 9a22 22 0 0 0 0 30M43 9a22 22 0 0 1 0 30"/></svg>';
+
   FV.ui = {
     boton: function (texto, accion, clase, atributos) {
       return '<button type="button" class="btn ' + (clase || '') + '" data-accion="' + accion + '" ' + (atributos || '') + '>' + texto + '</button>';

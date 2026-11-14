@@ -152,7 +152,7 @@
     titulo: function () { return 'El partido ya ha empezado: minuto ' + P.e.minMostrado; },
     volver: false,
     html: function () {
-      return '<p class="marcador" id="marcador">' + P.marcadorTexto(P.e.marcadorMostrado) + '</p>' +
+      return '<div class="tablero"><p class="marcador" id="marcador">' + P.marcadorTexto(P.e.marcadorMostrado) + '</p></div>' +
         '<p>Puedes escuchar un resumen o ir directamente al partido.</p>' +
         bloqueLectura +
         '<div class="acciones">' +
@@ -279,8 +279,9 @@
     html: function () {
       var e = P.e;
       var s = FV.sesion;
-      return '<p class="marcador" id="marcador">' + P.marcadorTexto(e.marcadorMostrado) + '</p>' +
-        '<p class="minuto" id="minuto">' + (e.enDescanso ? 'Descanso' : 'Minuto ' + e.minMostrado) + '</p>' +
+      /* Marcador y minuto van juntos en un «tablero»: es lo primero que busca quien mira la pantalla. */
+      return '<div class="tablero"><p class="marcador" id="marcador">' + P.marcadorTexto(e.marcadorMostrado) + '</p>' +
+        '<p class="minuto" id="minuto">' + (e.enDescanso ? 'Descanso' : 'Minuto ' + e.minMostrado) + '</p></div>' +
         '<h2 class="solo-lector">Controles rápidos</h2>' +
         ui.boton('Repetir último evento', 'repetir', 'principal grande') +
         '<div class="fila">' +
@@ -366,7 +367,7 @@
     titulo: 'Final del partido',
     volver: false,
     html: function () {
-      return '<p class="marcador">' + P.marcadorTexto(P.e.marcador) + '</p>' +
+      return '<div class="tablero"><p class="marcador">' + P.marcadorTexto(P.e.marcador) + '</p></div>' +
         bloqueLectura +
         '<div class="acciones">' + ui.boton(textoBotonResumen(), 'resumen') +
         ui.boton('Finalizar sesión', 'finalizar', 'principal') + '</div>';
@@ -383,7 +384,8 @@
     titulo: 'Sesión finalizada',
     volver: false, estado: false,
     html: function () {
-      return '<p>' + ui.estado(true, 'Ajustes guardados.') + '</p>' +
+      return '<div class="emblema" aria-hidden="true">' + FV.LOGO + '</div>' +
+        '<p>' + ui.estado(true, 'Ajustes guardados.') + '</p>' +
         '<p>El accesorio está desconectado. Recuerda apagarlo.</p>' +
         '<div class="acciones">' + ui.boton('Volver al inicio', 'inicio', 'principal') + '</div>';
     },

@@ -49,10 +49,17 @@
     if (origen === 'practica') origen = conectado ? 'accesorio' : 'movil';
 
     var ms = FV.patronMs(clave);
-    FV.sim.registrar(origen, patron.nombre, ms);
+    var nota = null;
     if (FV.vibracionDisponible) {
-      try { navigator.vibrate(ms); } catch (e) { /* algunos navegadores lo bloquean sin interacción previa */ }
+      /* navigator.vibrate devuelve false cuando el navegador rechaza la vibración
+         (página sin ningún toque previo, dentro de un marco ajeno o en segundo plano).
+         Se anota en el registro para poder diagnosticarlo desde el propio móvil. */
+      var aceptada = false;
+      try { aceptada = navigator.vibrate(ms); } catch (e) { aceptada = false; }
+      if (!aceptada) nota = 'el navegador ha rechazado la vibración';
     }
+    FV.sim.registrar(origen, patron.nombre, ms, nota);
+    FV.sim.sonar(ms);   // apoyo sonoro opcional de las herramientas de prueba
     return true;
   };
 })(window.FV);

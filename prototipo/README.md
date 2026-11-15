@@ -33,7 +33,10 @@ Para verlo a tamaño de móvil en el ordenador: F12 → icono de dispositivo →
 
 ## Simulador del accesorio
 
-El panel con borde discontinuo es una **herramienta de prueba y no forma parte de la app**. Sirve para probar sin hardware:
+Está **plegado al final de la página**, bajo «Herramientas de prueba (equipo de desarrollo)»: es para quien prueba, no para el usuario. Se abre pulsándolo, o añadiendo `?pruebas` a la dirección. Es una **herramienta de prueba y no forma parte de la app**. Sirve para probar sin hardware:
+
+- «Probar vibración del móvil»: comprueba la vibración directamente y explica qué revisar si no se nota.
+- «Sonido de los patrones»: reproduce cada patrón como pitidos con el mismo ritmo, para iPhone, ordenador o móviles con la vibración desactivada.
 
 - Mini campo con la posición del balón y su descripción en texto.
 - Registro de los patrones emitidos (origen, evento y valores en milisegundos).

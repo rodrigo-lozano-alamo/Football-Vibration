@@ -53,7 +53,10 @@
           '<button type="submit" class="btn principal">Confirmar partido</button></div></form>';
       }
       // Cada partido es un botón con los equipos, la hora y el estado en texto (sin escudos ni colores).
-      return '<div class="pila">' + FV.datos.partidos.map(function (partido) {
+      /* Aviso de honestidad con el usuario: estos partidos no son reales.
+         Va antes de la lista y es corto, para no alargar la lectura en cada uso. */
+      return '<p class="bloque nota"><strong>Partidos de ejemplo.</strong> Todavía no hemos podido conectar la app con un servicio de datos (API) de partidos reales, así que estos encuentros son simulados.</p>' +
+        '<div class="pila">' + FV.datos.partidos.map(function (partido) {
         var estado = partido.minutoInicial ? 'En juego, minuto ' + partido.minutoInicial : 'Hoy a las ' + partido.hora + '. Aún no ha empezado';
         return ui.boton(partido.local + ' contra ' + partido.visitante + '<small>' + estado + '</small>',
           'elegir', 'grande', 'data-id="' + partido.id + '"');

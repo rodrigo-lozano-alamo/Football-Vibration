@@ -12,9 +12,69 @@
     return '<button type="button" class="btn" data-sim="' + accion + '">' + texto + '</button>';
   }
 
+  /* ---------- Apoyo sonoro de los patrones ----------
+     Reproduce cada patrón como pitidos con el mismo ritmo. Sirve para comprobar los patrones
+     donde no hay vibración (iPhone, ordenador) o cuando el móvil la tiene desactivada.
+     Es una ayuda de prueba: en el producto, los eventos NO suenan, vibran. */
+  var audio = null;
+  S.sonido = false;
+
+  S.sonar = function (ms) {
+    if (!S.sonido || !audio) return;
+    var t = audio.currentTime + 0.02;
+    ms.forEach(function (duracion, i) {
+      if (i % 2 === 0) {
+        var oscilador = audio.createOscillator();
+        var volumen = audio.createGain();
+        oscilador.type = 'triangle';
+        oscilador.frequency.value = 330;
+        volumen.gain.value = 0.35;
+        oscilador.connect(volumen);
+        volumen.connect(audio.destination);
+        oscilador.start(t);
+        oscilador.stop(t + duracion / 1000);
+      }
+      t += duracion / 1000;
+    });
+  };
+
+  /* Comprobación directa de la vibración del móvil, sin pasar por la app.
+     Explica el resultado y qué revisar en el teléfono si no se nota. */
+  function diagnosticar() {
+    var salida = el('sim-diagnostico');
+    if (!FV.vibracionDisponible) {
+      salida.textContent = 'Este navegador no tiene vibración (pasa en iPhone y en ordenador). ' +
+        'Activa «Sonido de los patrones» para oír el ritmo de cada patrón.';
+      return;
+    }
+    if (window.self !== window.top) {
+      salida.textContent = 'La página está abierta dentro de otra página (un marco). Chrome bloquea ahí la vibración: ' +
+        'abre la dirección del prototipo directamente en una pestaña.';
+      return;
+    }
+    var aceptada = false;
+    try { aceptada = navigator.vibrate([800, 200, 800]); } catch (e) { aceptada = false; }
+    salida.textContent = aceptada
+      ? 'El navegador ha aceptado la vibración (dos pulsos largos). Si no la has notado, el móvil la está silenciando. Revisa: ' +
+        '1) Ajustes → Sonido y vibración: que la vibración y la «respuesta táctil» estén activadas y con intensidad; ' +
+        '2) que el móvil no esté en modo Silencio ni en «No molestar»; ' +
+        '3) que el ahorro de batería esté desactivado; ' +
+        '4) que uses Chrome y no otro navegador.'
+      : 'El navegador ha rechazado la vibración. Toca primero cualquier botón de la app, comprueba que la pestaña está ' +
+        'en primer plano y vuelve a probar. Si sigue igual, revisa los permisos del sitio en Chrome.';
+  }
+
   S.iniciar = function () {
     el('sim-contenido').innerHTML =
+      '<p class="sim-etiqueta">HERRAMIENTA DE PRUEBA · no forma parte de la app</p>' +
       '<p id="sim-vibra"></p>' +
+      '<h3>Comprobar la vibración de este móvil</h3>' +
+      '<div class="sim-botones">' +
+        boton('Probar vibración del móvil', 'diagnostico') +
+        '<button type="button" class="btn" data-sim="sonido" aria-pressed="false">Sonido de los patrones</button>' +
+      '</div>' +
+      /* role="status": el resultado de la comprobación se anuncia al lector de pantalla. */
+      '<p id="sim-diagnostico" role="status"></p>' +
       /* El dibujo del campo es decorativo (aria-hidden): la misma información está en el texto de debajo. */
       '<svg class="sim-campo" viewBox="0 0 100 64" aria-hidden="true" focusable="false">' +
         '<rect class="linea" x="1" y="1" width="98" height="62"/>' +
@@ -55,10 +115,33 @@
       var b = evento.target.closest('[data-sim]');
       if (b) pulsar(b.dataset.sim, b);
     });
+
+    /* Las herramientas de prueba están plegadas por defecto: son para el equipo, no para el usuario.
+       Se recuerda si se dejaron abiertas (solo durante la sesión) y se abren con «?pruebas» en la dirección. */
+    var panel = el('sim-panel');
+    var abierto = /[?&]pruebas\b/.test(window.location.search);
+    try { abierto = abierto || window.sessionStorage.getItem('fv-pruebas') === '1'; } catch (e) { /* sin almacenamiento */ }
+    panel.open = abierto;
+    panel.addEventListener('toggle', function () {
+      try { window.sessionStorage.setItem('fv-pruebas', panel.open ? '1' : '0'); } catch (e) { /* sin almacenamiento */ }
+    });
   };
 
   function pulsar(accion, b) {
     var P = FV.partido;
+    if (accion === 'diagnostico') { diagnosticar(); return; }
+    if (accion === 'sonido') {
+      S.sonido = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', String(S.sonido));
+      // El contexto de audio solo puede crearse tras un toque del usuario.
+      if (S.sonido && !audio) {
+        var Contexto = window.AudioContext || window.webkitAudioContext;
+        if (Contexto) audio = new Contexto();
+      }
+      if (audio && audio.state === 'suspended') audio.resume();
+      if (S.sonido) S.sonar([150, 100, 150]);
+      return;
+    }
     if (FV.EVENTOS_DEPORTIVOS.indexOf(accion) !== -1) P.eventoManual(accion);
     else if (accion === 'cortar') P.cortarInternet();
     else if (accion === 'recuperar') P.recuperarInternet();

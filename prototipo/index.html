@@ -52,10 +52,11 @@
     </div>
 
     <!-- ===== SIMULADOR (herramienta de prueba, no forma parte del producto) ===== -->
+    <!-- Plegado por defecto y con aspecto discreto: es para el equipo de desarrollo, no para el usuario.
+         Sigue siendo accesible con teclado y lector de pantalla (un único control al final de la página). -->
     <aside class="simulador" aria-labelledby="sim-titulo">
-      <p class="sim-etiqueta">HERRAMIENTA DE PRUEBA · no forma parte de la app</p>
-      <details open>
-        <summary><h2 id="sim-titulo">Simulador del accesorio</h2></summary>
+      <details id="sim-panel">
+        <summary><h2 id="sim-titulo">Herramientas de prueba <span class="sim-para">(equipo de desarrollo)</span></h2></summary>
         <div id="sim-contenido"></div>
       </details>
     </aside>

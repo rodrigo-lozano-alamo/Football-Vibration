@@ -188,8 +188,8 @@
       return '<div class="pila">' +
         fila('Mi perfil', NOMBRE_PERFIL[p.perfil] || 'Sin configurar', 'perfil') +
         fila('Vibración y narración', 'Intensidad ' + p.intensidad + ' · Narración ' + NIVEL[p.narracion], 'vibracion') +
-        fila('Practicar patrones', p.ultimaPractica ? 'Última práctica: ' + p.ultimaPractica : 'Aún sin practicar', 'practica') +
-        fila('Accesorio', p.emparejado || 'Ninguno emparejado', 'accesorio') +
+        fila('Practicar patrones', p.ultimaPractica ? 'Última práctica: ' + FV.escapar(p.ultimaPractica) : 'Aún sin practicar', 'practica') +
+        fila('Accesorio', p.emparejado ? FV.escapar(p.emparejado) : 'Ninguno emparejado', 'accesorio') +
         fila('Repetir el cuestionario', 'Sustituye tu perfil actual', 'repetir') +
         '</div>';
     },

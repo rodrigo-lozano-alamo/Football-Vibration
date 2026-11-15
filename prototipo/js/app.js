@@ -19,6 +19,10 @@
      opciones.reemplazar: sustituye la pantalla actual sin apilarla (cambios de estado). */
   FV.ir = function (nombre, params, opciones) {
     opciones = opciones || {};
+    /* Si la app cambia de pantalla por su cuenta (p. ej. el partido termina) mientras hay un
+       diálogo abierto, el diálogo se cierra: si no, quedaría encima de una pantalla que ya no es la suya. */
+    var dialogo = $('#dialogo');
+    if (dialogo.open) dialogo.close();
     salir();
     if (opciones.raiz) pila = [];
     else if (actual && !opciones.reemplazar) pila.push(actual);
@@ -136,6 +140,14 @@
   /* ---------- Piezas de HTML ---------- */
   /* Emblema de la app (un balón con ondas de vibración). Es decorativo: siempre va con aria-hidden. */
   FV.LOGO = '<svg viewBox="0 0 48 48" focusable="false"><circle cx="24" cy="24" r="8"/><path d="M12 15a13 13 0 0 0 0 18M36 15a13 13 0 0 1 0 18M5 9a22 22 0 0 0 0 30M43 9a22 22 0 0 1 0 30"/></svg>';
+
+  /* Texto seguro para insertarlo en HTML. Se usa con los valores que vienen de localStorage
+     (nombre del accesorio, resultado de la práctica): nunca se insertan sin escapar. */
+  FV.escapar = function (texto) {
+    return String(texto).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  };
 
   FV.ui = {
     boton: function (texto, accion, clase, atributos) {

@@ -47,7 +47,7 @@ Está **plegado al final de la página**, bajo «Herramientas de prueba (equipo 
 
 - **Vibración:** usa `navigator.vibrate()`. Funciona en Chrome para Android. **En iPhone no existe**: los patrones se ven en el registro del simulador. En ordenador tampoco se nota.
 - **Voz:** usa la síntesis de voz del navegador (`speechSynthesis`) en español. Si el navegador no tiene voz, el texto aparece en pantalla.
-- Los patrones están en `js/patrones.js` y documentados en `../memoria/patrones.md`.
+- Los patrones están en `js/patrones.js`.
 
 ## Estructura
 
@@ -91,7 +91,7 @@ node -e "const fs=require('fs');fs.writeFileSync('js/datos-respaldo.js','window.
 ## Iteraciones
 
 - `../prototipo-iteracion1/` conserva el primer prototipo, tal como se evaluó.
-- Esta carpeta contiene la Iteración 2. Los cambios están en `../memoria/fase5.md`.
+- Esta carpeta contiene la Iteración 2.
 
 ## Abrirlo desde fuera con un túnel (puerto 8080)
 

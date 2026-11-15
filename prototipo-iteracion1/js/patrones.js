@@ -1,4 +1,4 @@
-/* Sistema de patrones de vibración. Fuente: memoria/patrones.md.
+/* Sistema de patrones de vibración.
    Valores en ms para navigator.vibrate(): vibra, pausa, vibra…
    Los patrones se distinguen por RITMO y DURACIÓN, no por intensidad, y ninguno es el principio de otro. */
 (function (FV) {

@@ -44,7 +44,7 @@ El panel con borde discontinuo es una **herramienta de prueba y no forma parte d
 
 - **Vibración:** usa `navigator.vibrate()`. Funciona en Chrome para Android. **En iPhone no existe**: los patrones se ven en el registro del simulador. En ordenador tampoco se nota.
 - **Voz:** usa la síntesis de voz del navegador (`speechSynthesis`) en español. Si el navegador no tiene voz, el texto aparece en pantalla.
-- Los patrones están en `js/patrones.js` y documentados en `../memoria/patrones.md`.
+- Los patrones están en `js/patrones.js`.
 
 ## Estructura
 
